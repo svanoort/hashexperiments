@@ -21,9 +21,9 @@ public class LongHashSet {
     long[] table;
 
     int elementCount = 0;
-    double loadFactor = 0.5;
+    double loadFactor = 0.25;
 
-    LongHashFunction hashFunction = new Md5Hash();
+    LongHashFunction hashFunction = new Murmur3Hash();
 
     public LongHashSet(){
         this.table = initTable(17);
@@ -64,7 +64,9 @@ public class LongHashSet {
         //Resize the hashtable if it is getting too full
         //If we use a robust hash, a prime size does not offer any benefits
         if (((double) elementCount)/(double)(table.length) >= loadFactor) {
-            resize(Math.min(Integer.MAX_VALUE,table.length * 2 + 1));
+            int newSize = Math.min(Integer.MAX_VALUE,
+                    (int)Math.round(Math.ceil(((double)elementCount)/loadFactor)) );
+            resize(newSize);
         }
     }
 

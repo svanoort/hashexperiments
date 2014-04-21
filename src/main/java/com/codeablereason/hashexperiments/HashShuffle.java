@@ -112,8 +112,6 @@ public class HashShuffle {
         System.out.println("Sample Shuffled 32 elements: ");
         System.out.println(java.util.Arrays.toString(indices));
 
-
-
         //Below will take a while to run, but finds elements where the average value in a slot
         //Differs from what would be expected for random behaviour
         System.out.println("STARTING Testing statistical randomness of the shuffle functions.");
