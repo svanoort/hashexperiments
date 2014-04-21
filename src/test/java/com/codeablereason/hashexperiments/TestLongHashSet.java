@@ -55,6 +55,7 @@ public class TestLongHashSet extends TestCase {
             LongHashSet set = new LongHashSet(size);
             for(int j = 0; j<size; j++) {
                 long newRand = rand.nextLong() & LongHashSet.TOP_BIT_MASK;
+                assert(newRand >= 0);
                 expected.add(new Long(newRand));
                 set.add(newRand);
                 compareSets(expected, set);

@@ -21,7 +21,7 @@ public class LongHashSet {
     long[] table;
 
     int elementCount = 0;
-    double loadFactor = 0.25;
+    double loadFactor = 0.5;
 
     LongHashFunction hashFunction = new Murmur3Hash();
 
@@ -66,13 +66,15 @@ public class LongHashSet {
         if (((double) elementCount)/(double)(table.length) >= loadFactor) {
             int newSize = Math.min(Integer.MAX_VALUE,
                     (int)Math.round(Math.ceil(((double)elementCount)/loadFactor)) );
+            System.out.println("Old size: "+table.length+" New Size:"+newSize);
             resize(newSize);
         }
     }
 
     /** Tries to find the first empty slot to store the given long in table, or -1 if already present */
     int findSlot(long input, long[] table) {
-        int slot = Math.abs(hashFunction.hash(input) % table.length);
+        int hash = hashFunction.hash(input);
+        int slot = Math.abs(hash % table.length);
         long slotValue = table[slot];
 
         //Try the slot itself before linear probing
@@ -84,8 +86,18 @@ public class LongHashSet {
 
         //Linear probing through hash table slots
         int length = table.length;
+
+        //If hash is even, probe upwards, else downwards.
+        //This avoids collisions disproportionately falling in higher-numbered slots
+        int probeSign = ((hash & 0x1) == 0) ? 1 : -1;
+//        System.out.println("Probe Sign: "+probeSign);
         while (true) { //Not endless loop because table is never full
-            slot = (slot+1) % length;
+            slot += probeSign;
+            if (slot < 0) { //Off bottom end of array
+                slot += length;
+            } else if (slot >= length) { //Off the top end of the array
+                slot -= length;
+            }
             slotValue = table[slot];
 
             if (slotValue == EMPTY_SLOT) {
